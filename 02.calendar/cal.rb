@@ -1,6 +1,7 @@
 #!/usr/bin/env ruby
 
 require 'date'
+require 'optparse'
 
 def print_calendar(year:, month:)
   first_day = Date.new(year, month, 1)
@@ -17,7 +18,17 @@ def print_calendar(year:, month:)
   puts
 end
 
+def parse_options
+  option_parser = OptionParser.new
+  option_parser.banner = 'Usage: cal.rb [options]'
+  option_parser.on('-m MONTH', 'select month')
+  option_parser.on('-y YEAR', 'select year')
+  option_parser.parse(ARGV)
+  option_parser.getopts(ARGV, 'y:m:')
+end
+
 TODAY = Date.today
-year = TODAY.year
-month = TODAY.month
+options = parse_options
+year = options['y'] ? options['y'].to_i : TODAY.year
+month = options['m'] ? options['m'].to_i : TODAY.month
 print_calendar(year: year, month: month)
