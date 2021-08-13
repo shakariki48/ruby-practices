@@ -3,6 +3,10 @@
 require 'date'
 require 'optparse'
 
+def print_in_inveted_color(text)
+  print "\e[7m" + text + "\e[m"
+end
+
 def print_calendar(year:, month:)
   raise "invalid argument: #{month} is not a month number (1..12)" if month < 1 || month > 12
 
@@ -14,7 +18,12 @@ def print_calendar(year:, month:)
 
   print '   ' * first_day.wday
   (first_day..last_day).each { |date|
-    print date.day.to_s.rjust(2)
+    str_day = date.day.to_s.rjust(2)
+    if date == Date.today
+      print_in_inveted_color str_day
+    else
+      print str_day
+    end
     print date.saturday? ? "\n" : ' '
   }
   puts
