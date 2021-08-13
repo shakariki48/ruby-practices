@@ -1,3 +1,5 @@
+#!/usr/bin/env ruby
+
 def fizzbuzz
   from = 1
   to = 20
