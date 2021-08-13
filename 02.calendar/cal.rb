@@ -4,6 +4,8 @@ require 'date'
 require 'optparse'
 
 def print_calendar(year:, month:)
+  raise "invalid argument: #{month} is not a month number (1..12)" if month < 1 || month > 12
+
   first_day = Date.new(year, month, 1)
   last_day = Date.new(year, month, -1)
 
@@ -21,14 +23,20 @@ end
 def parse_options
   option_parser = OptionParser.new
   option_parser.banner = 'Usage: cal.rb [options]'
-  option_parser.on('-m MONTH', 'select month')
-  option_parser.on('-y YEAR', 'select year')
+  option_parser.on('-m MONTH', Integer, 'select month')
+  option_parser.on('-y YEAR', Integer, 'select year')
   option_parser.parse(ARGV)
   option_parser.getopts(ARGV, 'y:m:')
+rescue => e
+  raise e.message + "\n" + option_parser.help
 end
 
-TODAY = Date.today
-options = parse_options
-year = options['y'] ? options['y'].to_i : TODAY.year
-month = options['m'] ? options['m'].to_i : TODAY.month
-print_calendar(year: year, month: month)
+begin
+  TODAY = Date.today
+  options = parse_options
+  year = options['y'] ? options['y'].to_i : TODAY.year
+  month = options['m'] ? options['m'].to_i : TODAY.month
+  print_calendar(year: year, month: month)
+rescue => e
+  puts e.message
+end
