@@ -17,7 +17,7 @@ def print_calendar(year:, month:)
   puts '日 月 火 水 木 金 土'
 
   print '   ' * first_day.wday
-  (first_day..last_day).each { |date|
+  (first_day..last_day).each do |date|
     str_day = date.day.to_s.rjust(2)
     if date == Date.today
       print_in_inveted_color str_day
@@ -25,7 +25,7 @@ def print_calendar(year:, month:)
       print str_day
     end
     print date.saturday? ? "\n" : ' '
-  }
+  end
   puts
 end
 
@@ -41,10 +41,10 @@ rescue => e
 end
 
 begin
-  TODAY = Date.today
+  today = Date.today
   options = parse_options
-  year = options['y'] ? options['y'].to_i : TODAY.year
-  month = options['m'] ? options['m'].to_i : TODAY.month
+  year = options['y'] ? options['y'].to_i : today.year
+  month = options['m'] ? options['m'].to_i : today.month
   print_calendar(year: year, month: month)
 rescue => e
   puts e.message
