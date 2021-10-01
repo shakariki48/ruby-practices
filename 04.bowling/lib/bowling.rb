@@ -25,7 +25,27 @@ def to_frames(scores_csv)
   frames
 end
 
-def calc_score(frames); end
+def calc_score(frames)
+  score = 0
+
+  frames.each.with_index do |frame, i|
+    score += frame.sum
+    break if i + 1 == frames.length
+
+    score += frames[i + 1][0] if frame.sum == 10 # spare or strike
+
+    # strike
+    if frame[0] == 10
+      score += if frames[i + 1][0] == 10 && i + 2 != frames.length
+                 frames[i + 2][0]
+               else
+                 frames[i + 1][1]
+               end
+    end
+  end
+
+  score
+end
 
 # main
 if __FILE__ == $PROGRAM_NAME
