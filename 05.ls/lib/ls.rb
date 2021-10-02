@@ -24,7 +24,27 @@ def get_filenames(path)
 end
 
 def format(filenames, num_columns)
-  # TODO: 実装する
+  max_filename_length = filenames.map(&:length).max
+
+  if filenames.length <= num_columns
+    line = filenames.map { |f| f.ljust(max_filename_length) }.join(' ')
+    return line.strip
+  end
+
+  num_rows = (filenames.length / num_columns.to_f).ceil
+  matrix = []
+  filenames.each_slice(num_rows) do |f|
+    if f.length < num_rows
+      blanks = Array.new(num_rows - f.length, '')
+      f.push(*blanks)
+    end
+    matrix << f
+  end
+  lines = matrix.transpose.map do |f|
+    line = f.map { |filename| filename.ljust(max_filename_length) }.join(' ')
+    line.strip
+  end
+  lines.to_a.join("\n")
 end
 
 main if __FILE__ == $PROGRAM_NAME
