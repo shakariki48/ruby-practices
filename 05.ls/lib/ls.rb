@@ -17,7 +17,8 @@ def get_filenames(path)
   if File.file?(path)
     %W[#{path}]
   elsif File.directory?(path)
-    Dir.open(path).each_child.to_a
+    files = Dir.open(path).each_child.sort
+    files.reject { |f| f.start_with?('.') }
   else
     []
   end

@@ -1,23 +1,22 @@
 # frozen_string_literal: true
 
 require 'minitest/autorun'
-require 'set'
 require_relative '../lib/ls'
 
 class LsTest < Minitest::Test
   # === 05.ls/test ディレクトリで実行する ===
   def test_get_filenames
     assert_equal(
-      Set.new(['lib', 'test', '.gitkeep']),
-      Set.new(get_filenames('..'))
+      %w[lib test],
+      get_filenames('..')
     )
     assert_equal(
-      Set.new(['../lib/ls.rb']),
-      Set.new(get_filenames('../lib/ls.rb'))
+      ['../lib/ls.rb'],
+      get_filenames('../lib/ls.rb')
     )
     assert_equal(
-      Set.new([]),
-      Set.new(get_filenames('../lib/ls'))
+      [],
+      get_filenames('../lib/ls')
     )
   end
 
@@ -26,8 +25,8 @@ class LsTest < Minitest::Test
 
     # 1列の文字数は (最長のファイル名の長さ) + 1
 
-    filenames = ['lib', 'test', '.gitkeep']
-    expected = 'lib      test     .gitkeep'
+    filenames = %w[lib test]
+    expected = 'lib  test'
     assert_equal(expected, format(filenames, num_columns))
 
     filenames = ['../lib/ls.rb']
