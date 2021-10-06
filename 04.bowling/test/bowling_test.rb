@@ -49,4 +49,31 @@ class BowlingTest < Minitest::Test
       calc_score([[10, 0], [10, 0], [10, 0], [10, 0], [10, 0], [10, 0], [10, 0], [10, 0], [10, 0], [10, 10, 10]])
     )
   end
+
+  def test_all
+    input = '6,3,9,0,0,3,8,2,7,3,X,9,1,8,0,X,6,4,5'
+    expected = 139
+    actual = calc_score(to_frames(input))
+    assert_equal(expected, actual)
+
+    input = '6,3,9,0,0,3,8,2,7,3,X,9,1,8,0,X,X,X,X'
+    expected = 164
+    actual = calc_score(to_frames(input))
+    assert_equal(expected, actual)
+
+    input = '0,10,1,5,0,0,0,0,X,X,X,5,1,8,1,0,4'
+    expected = 107
+    actual = calc_score(to_frames(input))
+    assert_equal(expected, actual)
+
+    input = '6,3,9,0,0,3,8,2,7,3,X,9,1,8,0,X,X,0,0'
+    expected = 134
+    actual = calc_score(to_frames(input))
+    assert_equal(expected, actual)
+
+    input = 'X,X,X,X,X,X,X,X,X,X,X,X'
+    expected = 300
+    actual = calc_score(to_frames(input))
+    assert_equal(expected, actual)
+  end
 end
