@@ -32,7 +32,8 @@ def calc_score(frames)
     score += frame.sum
     break if i + 1 == frames.length
 
-    score += frames[i + 1][0] if frame.sum == 10 # spare or strike
+    # spare or strike
+    score += frames[i + 1][0] if frame.sum == 10
 
     # strike
     if frame[0] == 10
