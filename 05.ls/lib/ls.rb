@@ -17,8 +17,7 @@ def filenames(path)
   if File.file?(path)
     %W[#{path}]
   elsif File.directory?(path)
-    files = Dir.open(path).each_child.sort
-    files.reject { |f| f.start_with?('.') }
+    Dir.glob('*', base: path).sort
   else
     []
   end
