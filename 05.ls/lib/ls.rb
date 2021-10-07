@@ -5,7 +5,7 @@ NUM_COLUMNS = 3
 
 def main
   path = ARGV[0] || '.'
-  filenames = get_filenames(path)
+  filenames = filenames(path)
   if filenames.empty?
     puts "ls: #{path}: No such file or directory"
   else
@@ -13,7 +13,7 @@ def main
   end
 end
 
-def get_filenames(path)
+def filenames(path)
   if File.file?(path)
     %W[#{path}]
   elsif File.directory?(path)

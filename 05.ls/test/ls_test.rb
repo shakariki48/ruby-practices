@@ -5,18 +5,18 @@ require_relative '../lib/ls'
 
 class LsTest < Minitest::Test
   # === 05.ls/test ディレクトリで実行する ===
-  def test_get_filenames
+  def test_filenames
     assert_equal(
       %w[lib test],
-      get_filenames('..')
+      filenames('..')
     )
     assert_equal(
       ['../lib/ls.rb'],
-      get_filenames('../lib/ls.rb')
+      filenames('../lib/ls.rb')
     )
     assert_equal(
       [],
-      get_filenames('../lib/ls')
+      filenames('../lib/ls')
     )
   end
 
