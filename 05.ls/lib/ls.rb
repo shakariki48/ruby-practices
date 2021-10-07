@@ -45,7 +45,7 @@ def format(filenames, num_columns)
     line = f.map { |filename| filename.ljust(max_filename_length) }.join(' ')
     line.strip
   end
-  lines.to_a.join("\n")
+  lines.join("\n")
 end
 
 main if __FILE__ == $PROGRAM_NAME
