@@ -36,7 +36,23 @@ class LsTest < Minitest::Test
     )
     assert_equal(
       [],
-      filenames('../lib/ls')
+      filenames('dummy')
+    )
+  end
+
+  # === 05.ls/test ディレクトリで実行する ===
+  def test_filenames_with_dotfiles
+    assert_equal(
+      ['.', '..', '.gitkeep', 'lib', 'test'],
+      filenames('..', includes_dotfiles: true)
+    )
+    assert_equal(
+      ['../lib/ls.rb'],
+      filenames('../lib/ls.rb', includes_dotfiles: true)
+    )
+    assert_equal(
+      [],
+      filenames('dummy', includes_dotfiles: true)
     )
   end
 

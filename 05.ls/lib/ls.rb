@@ -7,7 +7,7 @@ NUM_COLUMNS = 3
 
 def main
   path, options = parse_arguments
-  filenames = filenames(path)
+  filenames = filenames(path, includes_dotfiles: options.include?('a'))
   if filenames.empty?
     puts "ls: #{path}: No such file or directory"
   else
@@ -26,11 +26,12 @@ def parse_arguments
   [path, options]
 end
 
-def filenames(path)
+def filenames(path, includes_dotfiles: false)
   if File.file?(path)
     %W[#{path}]
   elsif File.directory?(path)
-    Dir.glob('*', base: path).sort
+    flags = includes_dotfiles ? File::FNM_DOTMATCH : 0
+    Dir.glob('*', flags, base: path).sort
   else
     []
   end
