@@ -26,18 +26,13 @@ class LsTest < Minitest::Test
 
   # === 05.ls/test ディレクトリで実行する ===
   def test_filenames
-    assert_equal(
-      %w[lib test],
-      filenames('..')
-    )
-    assert_equal(
-      ['../lib/ls.rb'],
-      filenames('../lib/ls.rb')
-    )
-    assert_equal(
-      [],
-      filenames('dummy')
-    )
+    assert_equal(%w[lib test], filenames('..'))
+
+    assert_equal(['../lib/ls.rb'], filenames('../lib/ls.rb'))
+
+    assert_nil(filenames('dummy'))
+
+    assert_equal([], filenames('empty_dir'))
   end
 
   # === 05.ls/test ディレクトリで実行する ===
@@ -46,14 +41,13 @@ class LsTest < Minitest::Test
       ['.', '..', '.gitkeep', 'lib', 'test'],
       filenames('..', includes_dotfiles: true)
     )
+
     assert_equal(
       ['../lib/ls.rb'],
       filenames('../lib/ls.rb', includes_dotfiles: true)
     )
-    assert_equal(
-      [],
-      filenames('dummy', includes_dotfiles: true)
-    )
+
+    assert_nil(filenames('dummy', includes_dotfiles: true))
   end
 
   def test_format

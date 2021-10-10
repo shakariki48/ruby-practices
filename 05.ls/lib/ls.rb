@@ -8,9 +8,9 @@ NUM_COLUMNS = 3
 def main
   path, options = parse_arguments
   filenames = filenames(path, includes_dotfiles: options.include?('a'))
-  if filenames.empty?
+  if filenames.nil?
     puts "ls: #{path}: No such file or directory"
-  else
+  elsif !filenames.empty?
     puts format(filenames, NUM_COLUMNS)
   end
 rescue OptionParser::InvalidOption => e
@@ -32,8 +32,6 @@ def filenames(path, includes_dotfiles: false)
   elsif File.directory?(path)
     flags = includes_dotfiles ? File::FNM_DOTMATCH : 0
     Dir.glob('*', flags, base: path).sort
-  else
-    []
   end
 end
 
