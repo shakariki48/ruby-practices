@@ -27,21 +27,21 @@ def format(filenames, num_columns)
   max_filename_length = filenames.map(&:length).max
 
   if filenames.length <= num_columns
-    line = filenames.map { |f| f.ljust(max_filename_length) }.join(' ')
+    line = filenames.map { |filename| filename.ljust(max_filename_length) }.join(' ')
     return line.strip
   end
 
   num_rows = (filenames.length / num_columns.to_f).ceil
-  matrix = []
-  filenames.each_slice(num_rows) do |f|
-    if f.length < num_rows
-      blanks = Array.new(num_rows - f.length, '')
-      f.push(*blanks)
+  filenames_matrix = []
+  filenames.each_slice(num_rows) do |filenames_row|
+    if filenames_row.length < num_rows
+      blanks = Array.new(num_rows - filenames_row.length, '')
+      filenames_row.push(*blanks)
     end
-    matrix << f
+    filenames_matrix << filenames_row
   end
-  lines = matrix.transpose.map do |f|
-    line = f.map { |filename| filename.ljust(max_filename_length) }.join(' ')
+  lines = filenames_matrix.transpose.map do |filenames_row|
+    line = filenames_row.map { |filename| filename.ljust(max_filename_length) }.join(' ')
     line.strip
   end
   lines.join("\n")
