@@ -4,6 +4,26 @@ require 'minitest/autorun'
 require_relative '../lib/ls'
 
 class LsTest < Minitest::Test
+  def test_parse_arguments
+    # setup
+    original_argv = ARGV.clone
+
+    # './ls.rb' と実行した場合
+    ARGV.clear.concat([])
+    assert_equal(['.', []], parse_arguments)
+
+    # './ls.rb ../lib' と実行した場合
+    ARGV.clear.concat(['./lib'])
+    assert_equal(['./lib', []], parse_arguments)
+
+    # './ls.rb -a ..' と実行した場合
+    ARGV.clear.concat(['-a', '..'])
+    assert_equal(['..', ['a']], parse_arguments)
+
+    # teardown
+    ARGV.clear.concat(original_argv)
+  end
+
   # === 05.ls/test ディレクトリで実行する ===
   def test_filenames
     assert_equal(

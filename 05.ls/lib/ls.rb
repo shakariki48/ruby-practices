@@ -1,16 +1,29 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
+require 'optparse'
+
 NUM_COLUMNS = 3
 
 def main
-  path = ARGV[0] || '.'
+  path, options = parse_arguments
   filenames = filenames(path)
   if filenames.empty?
     puts "ls: #{path}: No such file or directory"
   else
     puts format(filenames, NUM_COLUMNS)
   end
+rescue OptionParser::InvalidOption => e
+  puts e.message
+end
+
+def parse_arguments
+  options = []
+  opt = OptionParser.new
+  opt.on('-a') { options << 'a' }
+  argv = opt.parse(ARGV)
+  path = argv[0] || '.'
+  [path, options]
 end
 
 def filenames(path)
