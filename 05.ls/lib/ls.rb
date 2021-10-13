@@ -14,13 +14,19 @@ def main
     puts format(filenames, NUM_COLUMNS)
   end
 rescue OptionParser::InvalidOption => e
-  puts e.message
+  specified_option = e.args[0].delete('-')
+  message = <<~TEXT
+    ls: invalid option -- '#{specified_option}'
+    Try 'ls --help' for more information.
+  TEXT
+  puts message
 end
 
 def parse_arguments
   options = []
   opt = OptionParser.new
-  opt.on('-a') { options << 'a' }
+  opt.banner = 'Usage: ls [OPTION] [FILE]'
+  opt.on('-a', 'do not ignore entries starting with .') { options << 'a' }
   argv = opt.parse(ARGV)
   path = argv[0] || '.'
   [path, options]
