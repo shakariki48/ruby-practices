@@ -39,7 +39,7 @@ def filenames(path, includes_dotfiles: false)
     flags = includes_dotfiles ? File::FNM_DOTMATCH : 0
     Dir.glob('*', flags, base: path).sort
   else
-    %W[#{path}]
+    [path]
   end
 end
 
