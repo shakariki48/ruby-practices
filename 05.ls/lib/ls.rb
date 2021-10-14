@@ -33,11 +33,13 @@ def parse_arguments
 end
 
 def filenames(path, includes_dotfiles: false)
-  if File.file?(path)
-    %W[#{path}]
-  elsif File.directory?(path)
+  return nil unless File.exist?(path)
+
+  if File.directory?(path)
     flags = includes_dotfiles ? File::FNM_DOTMATCH : 0
     Dir.glob('*', flags, base: path).sort
+  else
+    %W[#{path}]
   end
 end
 

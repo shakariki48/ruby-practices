@@ -30,6 +30,8 @@ class LsTest < Minitest::Test
 
     assert_equal(['../lib/ls.rb'], filenames('../lib/ls.rb'))
 
+    assert_equal(['/dev/null'], filenames('/dev/null'))
+
     assert_nil(filenames('dummy'))
 
     assert_equal([], filenames('empty_dir'))
@@ -46,6 +48,8 @@ class LsTest < Minitest::Test
       ['../lib/ls.rb'],
       filenames('../lib/ls.rb', includes_dotfiles: true)
     )
+
+    assert_equal(['/dev/null'], filenames('/dev/null'))
 
     assert_nil(filenames('dummy', includes_dotfiles: true))
   end
