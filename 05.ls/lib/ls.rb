@@ -37,7 +37,7 @@ def filenames(path, includes_dotfiles: false)
 
   if File.directory?(path)
     flags = includes_dotfiles ? File::FNM_DOTMATCH : 0
-    Dir.glob('*', flags, base: path).sort
+    Dir.glob('*', flags, base: path)
   else
     [path]
   end
