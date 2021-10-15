@@ -4,20 +4,54 @@ require 'minitest/autorun'
 require_relative '../lib/ls'
 
 class LsTest < Minitest::Test
+  def test_parse_arguments
+    # setup
+    original_argv = ARGV.clone
+
+    # './ls.rb' と実行した場合
+    ARGV.clear.concat([])
+    assert_equal(['.', []], parse_arguments)
+
+    # './ls.rb ../lib' と実行した場合
+    ARGV.clear.concat(['./lib'])
+    assert_equal(['./lib', []], parse_arguments)
+
+    # './ls.rb -a ..' と実行した場合
+    ARGV.clear.concat(['-a', '..'])
+    assert_equal(['..', ['a']], parse_arguments)
+
+    # teardown
+    ARGV.clear.concat(original_argv)
+  end
+
   # === 05.ls/test ディレクトリで実行する ===
   def test_filenames
+    assert_equal(%w[lib test], filenames('..'))
+
+    assert_equal(['../lib/ls.rb'], filenames('../lib/ls.rb'))
+
+    assert_equal(['/dev/null'], filenames('/dev/null'))
+
+    assert_nil(filenames('dummy'))
+
+    assert_equal([], filenames('empty_dir'))
+  end
+
+  # === 05.ls/test ディレクトリで実行する ===
+  def test_filenames_with_dotfiles
     assert_equal(
-      %w[lib test],
-      filenames('..')
+      ['.', '..', '.gitkeep', 'lib', 'test'],
+      filenames('..', includes_dotfiles: true)
     )
+
     assert_equal(
       ['../lib/ls.rb'],
-      filenames('../lib/ls.rb')
+      filenames('../lib/ls.rb', includes_dotfiles: true)
     )
-    assert_equal(
-      [],
-      filenames('../lib/ls')
-    )
+
+    assert_equal(['/dev/null'], filenames('/dev/null'))
+
+    assert_nil(filenames('dummy', includes_dotfiles: true))
   end
 
   def test_format
@@ -44,6 +78,23 @@ class LsTest < Minitest::Test
       Procfile          config            postcss.config.js
       README.md         config.ru
     TEXT
+    assert_equal(expected, format(filenames, num_columns))
+  end
+
+  def test_format_with_dotfiles
+    num_columns = 3
+
+    # 1列の文字数は (最長のファイル名の長さ) + 1
+
+    filenames = ['.', '..', '.gitkeep', 'lib', 'test']
+    expected = <<~TEXT.chomp
+      .        .gitkeep test
+      ..       lib
+    TEXT
+    assert_equal(expected, format(filenames, num_columns))
+
+    filenames = ['.', '..']
+    expected = '.  ..'
     assert_equal(expected, format(filenames, num_columns))
   end
 end
