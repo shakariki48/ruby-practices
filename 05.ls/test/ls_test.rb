@@ -121,21 +121,4 @@ class LsTest < Minitest::Test
     TEXT
     assert_equal(expected, format(filenames, num_columns))
   end
-
-  def test_format_with_a_option
-    num_columns = 3
-
-    # 1列の文字数は (最長のファイル名の長さ) + 1
-
-    filenames = ['.', '..', '.gitkeep', 'lib', 'test']
-    expected = <<~TEXT.chomp
-      .        .gitkeep test
-      ..       lib
-    TEXT
-    assert_equal(expected, format(filenames, num_columns))
-
-    filenames = ['.', '..']
-    expected = '.  ..'
-    assert_equal(expected, format(filenames, num_columns))
-  end
 end
