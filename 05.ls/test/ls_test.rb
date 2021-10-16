@@ -20,6 +20,10 @@ class LsTest < Minitest::Test
     ARGV.clear.concat(['-a', '..'])
     assert_equal(['..', ['a']], parse_arguments)
 
+    # './ls.rb -r ..' と実行した場合
+    ARGV.clear.concat(['-r', '..'])
+    assert_equal(['..', ['r']], parse_arguments)
+
     # teardown
     ARGV.clear.concat(original_argv)
   end
@@ -35,23 +39,60 @@ class LsTest < Minitest::Test
     assert_nil(filenames('dummy'))
 
     assert_equal([], filenames('empty_dir'))
+
+    assert_equal(
+      [
+        '01.fizzbuzz', '02.calendar', '03.rake', '04.bowling', '05.ls',
+        '06.wc', '07.bowling_object', '08.ls_object', '09.wc_object', 'README.md'
+      ],
+      filenames('../..')
+    )
   end
 
   # === 05.ls/test ディレクトリで実行する ===
-  def test_filenames_with_dotfiles
+  def test_filenames_with_a_option
+    options = ['a']
+
     assert_equal(
       ['.', '..', '.gitkeep', 'lib', 'test'],
-      filenames('..', includes_dotfiles: true)
+      filenames('..', options: options)
     )
+
+    assert_equal(['../lib/ls.rb'], filenames('../lib/ls.rb', options: options))
+
+    assert_equal(['/dev/null'], filenames('/dev/null', options: options))
+
+    assert_nil(filenames('dummy', options: options))
 
     assert_equal(
-      ['../lib/ls.rb'],
-      filenames('../lib/ls.rb', includes_dotfiles: true)
+      [
+        '.', '..', '.git', '.gitignore', '.rubocop.yml',
+        '01.fizzbuzz', '02.calendar', '03.rake', '04.bowling', '05.ls',
+        '06.wc', '07.bowling_object', '08.ls_object', '09.wc_object', 'README.md'
+      ],
+      filenames('../..', options: options)
     )
+  end
 
-    assert_equal(['/dev/null'], filenames('/dev/null'))
+  # === 05.ls/test ディレクトリで実行する ===
+  def test_filenames_with_r_option
+    options = ['r']
 
-    assert_nil(filenames('dummy', includes_dotfiles: true))
+    assert_equal(%w[test lib], filenames('..', options: options))
+
+    assert_equal(['../lib/ls.rb'], filenames('../lib/ls.rb', options: options))
+
+    assert_equal(['/dev/null'], filenames('/dev/null', options: options))
+
+    assert_nil(filenames('dummy', options: options))
+
+    assert_equal(
+      [
+        'README.md', '09.wc_object', '08.ls_object', '07.bowling_object', '06.wc',
+        '05.ls', '04.bowling', '03.rake', '02.calendar', '01.fizzbuzz'
+      ],
+      filenames('../..', options: options)
+    )
   end
 
   def test_format
@@ -81,7 +122,7 @@ class LsTest < Minitest::Test
     assert_equal(expected, format(filenames, num_columns))
   end
 
-  def test_format_with_dotfiles
+  def test_format_with_a_option
     num_columns = 3
 
     # 1列の文字数は (最長のファイル名の長さ) + 1
