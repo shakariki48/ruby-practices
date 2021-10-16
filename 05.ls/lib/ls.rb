@@ -47,12 +47,6 @@ end
 
 def format(filenames, num_columns)
   max_filename_length = filenames.map(&:length).max
-
-  if filenames.length <= num_columns
-    line = filenames.map { |filename| filename.ljust(max_filename_length) }.join(' ')
-    return line.strip
-  end
-
   num_rows = (filenames.length / num_columns.to_f).ceil
   filenames_matrix = []
   filenames.each_slice(num_rows) do |filenames_row|
