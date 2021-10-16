@@ -122,3 +122,72 @@ class LsTest < Minitest::Test
     assert_equal(expected, format(filenames, num_columns))
   end
 end
+
+class LsTest < Minitest::Test
+  def test_all
+    # setup
+    original_argv = ARGV.clone
+
+    ARGV.clear.concat(['../..'])
+    num_columns = 3
+    expected = <<~TEXT.chomp
+      01.fizzbuzz       05.ls             09.wc_object
+      02.calendar       06.wc             README.md
+      03.rake           07.bowling_object
+      04.bowling        08.ls_object
+    TEXT
+    path, options = parse_arguments
+    filenames = filenames(path, options: options)
+    actual = format(filenames, num_columns)
+
+    assert_equal(actual, expected)
+
+    # teardown
+    ARGV.clear.concat(original_argv)
+  end
+
+  def test_all_with_a_option
+    # setup
+    original_argv = ARGV.clone
+
+    ARGV.clear.concat(['-a', '../..'])
+    num_columns = 3
+    expected = <<~TEXT.chomp
+      .                 01.fizzbuzz       06.wc
+      ..                02.calendar       07.bowling_object
+      .git              03.rake           08.ls_object
+      .gitignore        04.bowling        09.wc_object
+      .rubocop.yml      05.ls             README.md
+    TEXT
+    path, options = parse_arguments
+    filenames = filenames(path, options: options)
+    actual = format(filenames, num_columns)
+
+    assert_equal(actual, expected)
+
+    # teardown
+    ARGV.clear.concat(original_argv)
+  end
+
+  def test_all_with_r_option
+    # setup
+    original_argv = ARGV.clone
+
+    ARGV.clear.concat(['-r', '../..'])
+    num_columns = 3
+    expected = <<~TEXT.chomp
+      README.md         06.wc             02.calendar
+      09.wc_object      05.ls             01.fizzbuzz
+      08.ls_object      04.bowling
+      07.bowling_object 03.rake
+    TEXT
+    path, options = parse_arguments
+    filenames = filenames(path, options: options)
+    actual = format(filenames, num_columns)
+
+    assert_equal(actual, expected)
+
+    # teardown
+    ARGV.clear.concat(original_argv)
+  end
+end
