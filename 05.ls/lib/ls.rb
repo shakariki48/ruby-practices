@@ -7,7 +7,7 @@ NUM_COLUMNS = 3
 
 def main
   path, options = parse_arguments
-  filenames = filenames(path, includes_dotfiles: options.include?('a'))
+  filenames = filenames(path, options: options)
   if filenames.nil?
     puts "ls: #{path}: No such file or directory"
   elsif !filenames.empty?
@@ -27,17 +27,19 @@ def parse_arguments
   opt = OptionParser.new
   opt.banner = 'Usage: ls [OPTION] [FILE]'
   opt.on('-a', 'do not ignore entries starting with .') { options << 'a' }
+  opt.on('-r', 'reverse order while sorting') { options << 'r' }
   argv = opt.parse(ARGV)
   path = argv[0] || '.'
   [path, options]
 end
 
-def filenames(path, includes_dotfiles: false)
+def filenames(path, options: [])
   return nil unless File.exist?(path)
 
   if File.directory?(path)
-    flags = includes_dotfiles ? File::FNM_DOTMATCH : 0
-    Dir.glob('*', flags, base: path)
+    flags = options.include?('a') ? File::FNM_DOTMATCH : 0
+    filenames = Dir.glob('*', flags, base: path)
+    options.include?('r') ? filenames.reverse : filenames
   else
     [path]
   end
@@ -45,12 +47,6 @@ end
 
 def format(filenames, num_columns)
   max_filename_length = filenames.map(&:length).max
-
-  if filenames.length <= num_columns
-    line = filenames.map { |filename| filename.ljust(max_filename_length) }.join(' ')
-    return line.strip
-  end
-
   num_rows = (filenames.length / num_columns.to_f).ceil
   filenames_matrix = []
   filenames.each_slice(num_rows) do |filenames_row|
