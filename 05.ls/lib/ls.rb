@@ -82,16 +82,15 @@ def long_format(files)
     blocks_total = files.map { |file| blocks(file) }.sum
     lines << "total #{blocks_total}"
   end
-  max_char_lengths = max_char_lengths(files)
   lines += files.map do |file|
     "#{type(file)}#{permission(file)} " \
-    "#{num_hard_links(file).to_s.rjust(max_char_lengths[:num_hard_links])} " \
-    "#{owner_name(file).ljust(max_char_lengths[:owner_name])} " \
-    "#{group_name(file).ljust(max_char_lengths[:group_name])} " \
-    "#{byte_size(file).to_s.rjust(max_char_lengths[:byte_size])} " \
+    "#{num_hard_links(file).to_s.rjust(max_char_length(files, 'num_hard_links'))} " \
+    "#{owner_name(file).ljust(max_char_length(files, 'owner_name'))} " \
+    "#{group_name(file).ljust(max_char_length(files, 'group_name'))} " \
+    "#{byte_size(file).to_s.rjust(max_char_length(files, 'byte_size'))} " \
     "#{timestamp_month(file)} " \
     "#{timestamp_day(file)} " \
-    "#{timestamp_time_or_year(file).rjust(max_char_lengths[:timestamp_time_or_year])} " \
+    "#{timestamp_time_or_year(file).rjust(max_char_length(files, 'timestamp_time_or_year'))} " \
     "#{name(file)}"
   end
   lines.join("\n")
@@ -103,14 +102,8 @@ def blocks(file)
   file.lstat.blocks * BLOCK_SIZE_STAT / BLOCK_SIZE_LS
 end
 
-def max_char_lengths(files)
-  {
-    num_hard_links: files.map { |file| num_hard_links(file).to_s.length }.max,
-    owner_name: files.map { |file| owner_name(file).length }.max,
-    group_name: files.map { |file| group_name(file).length }.max,
-    byte_size: files.map { |file| byte_size(file).to_s.length }.max,
-    timestamp_time_or_year: files.map { |file| timestamp_time_or_year(file).length }.max
-  }
+def max_char_length(files, prop)
+  files.map { |file| send(prop, file).to_s.length }.max
 end
 
 def mode(file)
