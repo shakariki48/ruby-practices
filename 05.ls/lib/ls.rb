@@ -2,8 +2,7 @@
 # frozen_string_literal: true
 
 require 'optparse'
-
-NUM_COLUMNS = 3
+require 'etc'
 
 def main
   path, options = parse_arguments
@@ -11,7 +10,11 @@ def main
   if filenames.nil?
     puts "ls: #{path}: No such file or directory"
   elsif !filenames.empty?
-    puts format(filenames, NUM_COLUMNS)
+    if options.include?('l')
+      puts long_format(files(path, filenames))
+    else
+      puts short_format(filenames)
+    end
   end
 rescue OptionParser::InvalidOption => e
   specified_option = e.args[0].delete('-')
@@ -27,6 +30,7 @@ def parse_arguments
   opt = OptionParser.new
   opt.banner = 'Usage: ls [OPTION] [FILE]'
   opt.on('-a', 'do not ignore entries starting with .') { options << 'a' }
+  opt.on('-l', 'use a long listing format') { options << 'l' }
   opt.on('-r', 'reverse order while sorting') { options << 'r' }
   argv = opt.parse(ARGV)
   path = argv[0] || '.'
@@ -45,7 +49,16 @@ def filenames(path, options: [])
   end
 end
 
-def format(filenames, num_columns)
+def files(path, filenames)
+  if File.directory?(path)
+    file_paths = filenames.map { |filename| File.join(path, filename) }
+    file_paths.map { |file_path| File.new(file_path) }
+  else
+    [File.new(path)]
+  end
+end
+
+def short_format(filenames, num_columns = 3)
   max_filename_length = filenames.map(&:length).max
   num_rows = (filenames.length / num_columns.to_f).ceil
   filenames_matrix = []
@@ -61,6 +74,113 @@ def format(filenames, num_columns)
     line.strip
   end
   lines.join("\n")
+end
+
+def long_format(files)
+  lines = []
+  if files.length > 1
+    blocks_total = files.map { |file| blocks(file) }.sum
+    lines << "total #{blocks_total}"
+  end
+  max_char_lengths = max_char_lengths(files)
+  lines += files.map do |file|
+    "#{type(file)}#{permission(file)} " \
+    "#{num_hard_links(file).to_s.rjust(max_char_lengths[:num_hard_links])} " \
+    "#{owner_name(file).ljust(max_char_lengths[:owner_name])} " \
+    "#{group_name(file).ljust(max_char_lengths[:group_name])} " \
+    "#{byte_size(file).to_s.rjust(max_char_lengths[:byte_size])} " \
+    "#{timestamp_month(file)} " \
+    "#{timestamp_day(file)} " \
+    "#{timestamp_time_or_year(file).rjust(max_char_lengths[:timestamp_time_or_year])} " \
+    "#{name(file)}"
+  end
+  lines.join("\n")
+end
+
+BLOCK_SIZE_STAT = 512
+BLOCK_SIZE_LS = 1024 # GNU版lsコマンドのブロックサイズ (https://linuxjm.osdn.jp/info/GNU_coreutils/coreutils-ja_5.html)
+def blocks(file)
+  file.lstat.blocks * BLOCK_SIZE_STAT / BLOCK_SIZE_LS
+end
+
+def max_char_lengths(files)
+  {
+    num_hard_links: files.map { |file| num_hard_links(file).to_s.length }.max,
+    owner_name: files.map { |file| owner_name(file).length }.max,
+    group_name: files.map { |file| group_name(file).length }.max,
+    byte_size: files.map { |file| byte_size(file).to_s.length }.max,
+    timestamp_time_or_year: files.map { |file| timestamp_time_or_year(file).length }.max
+  }
+end
+
+def mode(file)
+  format('%06o', file.lstat.mode) # 例. => '100755'
+end
+
+def type(file)
+  types = {
+    '01' => 'p',
+    '02' => 'c',
+    '04' => 'd',
+    '06' => 'b',
+    '10' => '-',
+    '12' => 'l',
+    '14' => 's'
+  }
+  octal_type = mode(file)[0, 2] # 例. => '10'
+  types[octal_type]
+end
+
+def permission(file)
+  permissions = {
+    '0' => '---',
+    '1' => '--x',
+    '2' => '-w-',
+    '3' => '-wx',
+    '4' => 'r--',
+    '5' => 'r-x',
+    '6' => 'rw-',
+    '7' => 'rwx'
+  }
+  octal_permissions = mode(file)[3, 3].split('') # 例. => '755'
+  octal_permissions.map { |o| permissions[o] }.join('')
+end
+
+def num_hard_links(file)
+  file.lstat.nlink
+end
+
+def owner_name(file)
+  Etc.getpwuid(file.lstat.uid).name
+end
+
+def group_name(file)
+  Etc.getgrgid(file.lstat.gid).name
+end
+
+def byte_size(file)
+  file.lstat.size
+end
+
+def timestamp_month(file)
+  mtime = file.lstat.mtime
+  mtime.strftime('%b')
+end
+
+def timestamp_day(file)
+  mtime = file.lstat.mtime
+  mtime.strftime('%_d')
+end
+
+def timestamp_time_or_year(file)
+  mtime = file.lstat.mtime
+  mtime.strftime(mtime.year == Time.now.year ? '%H:%M' : '%Y')
+end
+
+def name(file)
+  name = File.basename(file.path)
+  name += " -> #{File.readlink(file.path)}" if type(file) == 'l'
+  name
 end
 
 main if __FILE__ == $PROGRAM_NAME
