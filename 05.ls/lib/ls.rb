@@ -3,6 +3,7 @@
 
 require 'optparse'
 require 'etc'
+require 'date'
 
 def main
   path, options = parse_arguments
@@ -177,8 +178,11 @@ def timestamp_day(file)
 end
 
 def timestamp_time_or_year(file)
+  # 最終更新時刻が6ヶ月以上前（または未来の日付）なら年を返し、そうでなければ時間を返す
+  # https://www.gnu.org/software/coreutils/manual/coreutils.html#Formatting-file-timestamps
   mtime = file.lstat.mtime
-  mtime.strftime(mtime.year == Time.now.year ? '%H:%M' : '%Y')
+  six_months_ago = Date.today.prev_month(6).to_time
+  mtime.strftime(mtime < six_months_ago || mtime > Time.now ? '%Y' : '%H:%M')
 end
 
 def name(file)
