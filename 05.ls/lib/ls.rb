@@ -97,7 +97,7 @@ def long_format(path, filenames)
     "#{timestamp_month(file)} " \
     "#{timestamp_day(file)} " \
     "#{timestamp_time_or_year(file).rjust(max_char_length(files, 'timestamp_time_or_year'))} " \
-    "#{name(file)}"
+    "#{filename(file)}"
   end
   lines.join("\n")
 end
@@ -185,10 +185,10 @@ def timestamp_time_or_year(file)
   mtime.strftime(mtime < six_months_ago || mtime > Time.now ? '%Y' : '%H:%M')
 end
 
-def name(file)
-  name = File.basename(file.path)
-  name += " -> #{File.readlink(file.path)}" if type(file) == 'l'
-  name
+def filename(file)
+  filename = File.basename(file.path)
+  filename += " -> #{File.readlink(file.path)}" if file.lstat.symlink?
+  filename
 end
 
 main if __FILE__ == $PROGRAM_NAME
