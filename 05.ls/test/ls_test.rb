@@ -134,6 +134,12 @@ class LsTest < Minitest::Test
     TEXT
     assert_equal(expected, long_format(path, filenames))
   end
+
+  def test_byte_size_or_dev_major_minor
+    assert_equal('96', byte_size_or_dev_major_minor(File.new('./sample_files/dir1')))
+    assert_equal('6', byte_size_or_dev_major_minor(File.new('./sample_files/file1')))
+    assert_equal('1, 3', byte_size_or_dev_major_minor(File.new('/dev/null')))
+  end
 end
 
 class LsTest < Minitest::Test

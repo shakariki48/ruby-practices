@@ -93,7 +93,7 @@ def long_format(path, filenames)
     "#{num_hard_links(file).to_s.rjust(max_char_length(files, 'num_hard_links'))} " \
     "#{owner_name(file).ljust(max_char_length(files, 'owner_name'))} " \
     "#{group_name(file).ljust(max_char_length(files, 'group_name'))} " \
-    "#{byte_size(file).to_s.rjust(max_char_length(files, 'byte_size'))} " \
+    "#{byte_size_or_dev_major_minor(file).rjust(max_char_length(files, 'byte_size_or_dev_major_minor'))} " \
     "#{timestamp_month(file)} " \
     "#{timestamp_day(file)} " \
     "#{timestamp_time_or_year(file).rjust(max_char_length(files, 'timestamp_time_or_year'))} " \
@@ -163,8 +163,12 @@ def group_name(file)
   Etc.getgrgid(file.lstat.gid).name
 end
 
-def byte_size(file)
-  file.lstat.size
+def byte_size_or_dev_major_minor(file)
+  if file.lstat.blockdev? || file.lstat.chardev?
+    "#{file.lstat.rdev_major}, #{file.lstat.rdev_minor}"
+  else
+    file.lstat.size.to_s
+  end
 end
 
 def timestamp_month(file)
