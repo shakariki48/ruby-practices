@@ -10,11 +10,7 @@ def main
   if filenames.nil?
     puts "ls: #{path}: No such file or directory"
   elsif !filenames.empty?
-    if options.include?('l')
-      puts long_format(files(path, filenames))
-    else
-      puts short_format(filenames)
-    end
+    puts format(path, filenames, options: options)
   end
 rescue OptionParser::InvalidOption => e
   specified_option = e.args[0].delete('-')
@@ -58,6 +54,14 @@ def files(path, filenames)
   end
 end
 
+def format(path, filenames, options: [])
+  if options.include?('l')
+    long_format(path, filenames)
+  else
+    short_format(filenames)
+  end
+end
+
 def short_format(filenames, num_columns = 3)
   max_filename_length = filenames.map(&:length).max
   num_rows = (filenames.length / num_columns.to_f).ceil
@@ -76,7 +80,8 @@ def short_format(filenames, num_columns = 3)
   lines.join("\n")
 end
 
-def long_format(files)
+def long_format(path, filenames)
+  files = files(path, filenames)
   lines = []
   if files.length > 1
     blocks_total = files.map { |file| blocks(file) }.sum
@@ -107,7 +112,7 @@ def max_char_length(files, prop)
 end
 
 def mode(file)
-  format('%06o', file.lstat.mode) # 例. => '100755'
+  Kernel.format('%06o', file.lstat.mode) # 例. => '100755'
 end
 
 def type(file)

@@ -30,7 +30,7 @@ class LsTest < Minitest::Test
 
   # === 05.ls/test ディレクトリで実行する ===
   def test_filenames
-    assert_equal(%w[lib test], filenames('..'))
+    assert_equal(['README.md', 'lib', 'test'], filenames('..'))
 
     assert_equal(['../lib/ls.rb'], filenames('../lib/ls.rb'))
 
@@ -54,7 +54,7 @@ class LsTest < Minitest::Test
     options = ['a']
 
     assert_equal(
-      ['.', '..', '.gitkeep', 'lib', 'test'],
+      ['.', '..', '.gitkeep', 'README.md', 'lib', 'test'],
       filenames('..', options: options)
     )
 
@@ -78,7 +78,7 @@ class LsTest < Minitest::Test
   def test_filenames_with_r_option
     options = ['r']
 
-    assert_equal(%w[test lib], filenames('..', options: options))
+    assert_equal(['test', 'lib', 'README.md'], filenames('..', options: options))
 
     assert_equal(['../lib/ls.rb'], filenames('../lib/ls.rb', options: options))
 
@@ -95,18 +95,16 @@ class LsTest < Minitest::Test
     )
   end
 
-  def test_format
-    num_columns = 3
-
+  def test_short_format
     # 1列の文字数は (最長のファイル名の長さ) + 1
 
     filenames = %w[lib test]
     expected = 'lib  test'
-    assert_equal(expected, format(filenames, num_columns))
+    assert_equal(expected, short_format(filenames))
 
     filenames = ['../lib/ls.rb']
     expected = '../lib/ls.rb'
-    assert_equal(expected, format(filenames, num_columns))
+    assert_equal(expected, short_format(filenames))
 
     filenames = [
       'Gemfile', 'Gemfile.lock', 'Procfile', 'README.md',
@@ -119,7 +117,22 @@ class LsTest < Minitest::Test
       Procfile          config            postcss.config.js
       README.md         config.ru
     TEXT
-    assert_equal(expected, format(filenames, num_columns))
+    assert_equal(expected, short_format(filenames))
+  end
+
+  def test_long_format
+    path = './sample_files'
+    filenames = %w[dir1 dir2 file1 file2 file3 link]
+    expected = <<~TEXT.chomp
+      total 12
+      drwxr-xr-x 3 root root   96 Jan  2 04:34 dir1
+      drwxr-xr-t 3 root root   96 Jan  2 04:34 dir2
+      -rw-r--r-- 1 root root    6 Jan  2 05:03 file1
+      -rwsr--r-- 1 root root    0 Jul  1  2021 file2
+      -rw-r-Sr-- 1 root root 4097 Jan  2 05:02 file3
+      lrwxr-xr-x 1 root root    5 Jan  2 04:35 link -> file1
+    TEXT
+    assert_equal(expected, long_format(path, filenames))
   end
 end
 
@@ -129,7 +142,6 @@ class LsTest < Minitest::Test
     original_argv = ARGV.clone
 
     ARGV.clear.concat(['../..'])
-    num_columns = 3
     expected = <<~TEXT.chomp
       01.fizzbuzz       05.ls             09.wc_object
       02.calendar       06.wc             README.md
@@ -138,7 +150,7 @@ class LsTest < Minitest::Test
     TEXT
     path, options = parse_arguments
     filenames = filenames(path, options: options)
-    actual = format(filenames, num_columns)
+    actual = format(path, filenames, options: options)
 
     assert_equal(actual, expected)
 
@@ -151,7 +163,6 @@ class LsTest < Minitest::Test
     original_argv = ARGV.clone
 
     ARGV.clear.concat(['-a', '../..'])
-    num_columns = 3
     expected = <<~TEXT.chomp
       .                 01.fizzbuzz       06.wc
       ..                02.calendar       07.bowling_object
@@ -161,7 +172,7 @@ class LsTest < Minitest::Test
     TEXT
     path, options = parse_arguments
     filenames = filenames(path, options: options)
-    actual = format(filenames, num_columns)
+    actual = format(path, filenames, options: options)
 
     assert_equal(actual, expected)
 
@@ -174,7 +185,6 @@ class LsTest < Minitest::Test
     original_argv = ARGV.clone
 
     ARGV.clear.concat(['-r', '../..'])
-    num_columns = 3
     expected = <<~TEXT.chomp
       README.md         06.wc             02.calendar
       09.wc_object      05.ls             01.fizzbuzz
@@ -183,7 +193,31 @@ class LsTest < Minitest::Test
     TEXT
     path, options = parse_arguments
     filenames = filenames(path, options: options)
-    actual = format(filenames, num_columns)
+    actual = format(path, filenames, options: options)
+
+    assert_equal(actual, expected)
+
+    # teardown
+    ARGV.clear.concat(original_argv)
+  end
+
+  def test_all_with_l_option
+    # setup
+    original_argv = ARGV.clone
+
+    ARGV.clear.concat(['-l', './sample_files'])
+    expected = <<~TEXT.chomp
+      total 12
+      drwxr-xr-x 3 root root   96 Jan  2 04:34 dir1
+      drwxr-xr-t 3 root root   96 Jan  2 04:34 dir2
+      -rw-r--r-- 1 root root    6 Jan  2 05:03 file1
+      -rwsr--r-- 1 root root    0 Jul  1  2021 file2
+      -rw-r-Sr-- 1 root root 4097 Jan  2 05:02 file3
+      lrwxr-xr-x 1 root root    5 Jan  2 04:35 link -> file1
+    TEXT
+    path, options = parse_arguments
+    filenames = filenames(path, options: options)
+    actual = format(path, filenames, options: options)
 
     assert_equal(actual, expected)
 
