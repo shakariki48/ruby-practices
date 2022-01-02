@@ -158,7 +158,7 @@ class LsTest < Minitest::Test
     filenames = filenames(path, options: options)
     actual = format(path, filenames, options: options)
 
-    assert_equal(actual, expected)
+    assert_equal(expected, actual)
 
     # teardown
     ARGV.clear.concat(original_argv)
@@ -180,7 +180,7 @@ class LsTest < Minitest::Test
     filenames = filenames(path, options: options)
     actual = format(path, filenames, options: options)
 
-    assert_equal(actual, expected)
+    assert_equal(expected, actual)
 
     # teardown
     ARGV.clear.concat(original_argv)
@@ -201,7 +201,7 @@ class LsTest < Minitest::Test
     filenames = filenames(path, options: options)
     actual = format(path, filenames, options: options)
 
-    assert_equal(actual, expected)
+    assert_equal(expected, actual)
 
     # teardown
     ARGV.clear.concat(original_argv)
@@ -225,7 +225,7 @@ class LsTest < Minitest::Test
     filenames = filenames(path, options: options)
     actual = format(path, filenames, options: options)
 
-    assert_equal(actual, expected)
+    assert_equal(expected, actual)
 
     # teardown
     ARGV.clear.concat(original_argv)
