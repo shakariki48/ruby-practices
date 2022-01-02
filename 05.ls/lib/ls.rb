@@ -125,8 +125,7 @@ def type(file)
     '12' => 'l',
     '14' => 's'
   }
-  octal_type = mode(file)[0, 2] # 例. => '10'
-  types[octal_type]
+  types[mode(file)[0..1]]
 end
 
 def permission(file)
@@ -140,8 +139,15 @@ def permission(file)
     '6' => 'rw-',
     '7' => 'rwx'
   }
-  octal_permissions = mode(file)[3, 3].split('') # 例. => '755'
-  octal_permissions.map { |o| permissions[o] }.join('')
+  user_permission = permissions[mode(file)[3]]
+  group_permission = permissions[mode(file)[4]]
+  others_permission = permissions[mode(file)[5]]
+  case mode(file)[2]
+  when '4' then user_permission = user_permission[0..1] + (user_permission[2] == 'x' ? 's' : 'S')
+  when '2' then group_permission = group_permission[0..1] + (group_permission[2] == 'x' ? 's' : 'S')
+  when '1' then others_permission = others_permission[0..1] + (others_permission[2] == 'x' ? 't' : 'T')
+  end
+  "#{user_permission}#{group_permission}#{others_permission}"
 end
 
 def num_hard_links(file)
