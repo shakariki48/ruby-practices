@@ -119,7 +119,9 @@ class LsTest < Minitest::Test
     TEXT
     assert_equal(expected, short_format(filenames))
   end
+end
 
+class LsTest < Minitest::Test
   def test_long_format
     path = './sample_files'
     filenames = %w[dir1 dir2 file1 file2 file3 link]
@@ -132,6 +134,18 @@ class LsTest < Minitest::Test
       -rw-r-Sr-- 1 root root 4097 Jan  2 05:02 file3
       lrwxr-xr-x 1 root root    5 Jan  2 04:35 link -> file1
     TEXT
+    assert_equal(expected, long_format(path, filenames))
+
+    # pathが空のディレクトリのときは合計サイズのみ
+    path = './sample_files/dir1'
+    filenames = []
+    expected = 'total 0'
+    assert_equal(expected, long_format(path, filenames))
+
+    # pathがファイルのときは合計サイズはなし
+    path = './sample_files/file1'
+    filenames = %w[file1]
+    expected = '-rw-r--r-- 1 root root 6 Jan  2 05:03 file1'
     assert_equal(expected, long_format(path, filenames))
   end
 
@@ -156,7 +170,7 @@ class LsTest < Minitest::Test
     TEXT
     path, options = parse_arguments
     filenames = filenames(path, options: options)
-    actual = format(path, filenames, options: options)
+    actual = short_format(filenames)
 
     assert_equal(expected, actual)
 
@@ -178,7 +192,7 @@ class LsTest < Minitest::Test
     TEXT
     path, options = parse_arguments
     filenames = filenames(path, options: options)
-    actual = format(path, filenames, options: options)
+    actual = short_format(filenames)
 
     assert_equal(expected, actual)
 
@@ -199,7 +213,7 @@ class LsTest < Minitest::Test
     TEXT
     path, options = parse_arguments
     filenames = filenames(path, options: options)
-    actual = format(path, filenames, options: options)
+    actual = short_format(filenames)
 
     assert_equal(expected, actual)
 
@@ -223,7 +237,7 @@ class LsTest < Minitest::Test
     TEXT
     path, options = parse_arguments
     filenames = filenames(path, options: options)
-    actual = format(path, filenames, options: options)
+    actual = long_format(path, filenames)
 
     assert_equal(expected, actual)
 
