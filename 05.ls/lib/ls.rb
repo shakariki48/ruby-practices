@@ -9,7 +9,7 @@ def main
   path, options = parse_arguments
   filenames = filenames(path, options: options)
   if filenames.nil?
-    puts "ls: #{path}: No such file or directory"
+    puts "ls: cannot access '#{path}': No such file or directory"
   elsif options.include?('l')
     puts long_format(path, filenames)
   elsif !filenames.empty?
