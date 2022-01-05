@@ -50,8 +50,10 @@ end
 
 def files(path, filenames)
   if File.directory?(path)
-    file_paths = filenames.map { |filename| File.join(path, filename) }
-    file_paths.map { |file_path| File.new(file_path) }
+    filenames.map do |filename|
+      file_path = File.join(path, filename)
+      File.new(file_path)
+    end
   else
     [File.new(path)]
   end
