@@ -3,6 +3,8 @@
 require 'minitest/autorun'
 require_relative '../lib/ls'
 
+# === 05.ls/test ディレクトリで実行する ===
+
 class LsTest < Minitest::Test
   def test_parse_arguments
     # setup
@@ -28,7 +30,6 @@ class LsTest < Minitest::Test
     ARGV.clear.concat(original_argv)
   end
 
-  # === 05.ls/test ディレクトリで実行する ===
   def test_filenames
     assert_equal(['README.md', 'lib', 'test'], filenames('..'))
 
@@ -49,7 +50,6 @@ class LsTest < Minitest::Test
     )
   end
 
-  # === 05.ls/test ディレクトリで実行する ===
   def test_filenames_with_a_option
     options = ['a']
 
@@ -74,7 +74,6 @@ class LsTest < Minitest::Test
     )
   end
 
-  # === 05.ls/test ディレクトリで実行する ===
   def test_filenames_with_r_option
     options = ['r']
 
@@ -125,27 +124,19 @@ class LsTest < Minitest::Test
   def test_long_format
     path = './sample_files'
     filenames = %w[dir1 dir2 file1 file2 file3 link]
-    expected = <<~TEXT.chomp
-      total 12
-      drwxr-xr-x 3 root root   96 Jan  2 04:34 dir1
-      drwxr-xr-t 3 root root   96 Jan  2 04:34 dir2
-      -rw-r--r-- 1 root root    6 Jan  2 05:03 file1
-      -rwsr--r-- 1 root root    0 Jul  1  2021 file2
-      -rw-r-Sr-- 1 root root 4097 Jan  2 05:02 file3
-      lrwxr-xr-x 1 root root    5 Jan  2 04:35 link -> file1
-    TEXT
+    expected = `\ls -l #{path}`.chomp
     assert_equal(expected, long_format(path, filenames))
 
     # pathが空のディレクトリのときは合計サイズのみ
     path = './sample_files/dir1'
     filenames = []
-    expected = 'total 0'
+    expected = `\ls -l #{path}`.chomp
     assert_equal(expected, long_format(path, filenames))
 
     # pathがファイルのときは合計サイズはなし
     path = './sample_files/file1'
     filenames = %w[file1]
-    expected = '-rw-r--r-- 1 root root 6 Jan  2 05:03 file1'
+    expected = `\ls -l #{path}`.chomp
     assert_equal(expected, long_format(path, filenames))
   end
 
@@ -226,18 +217,10 @@ class LsTest < Minitest::Test
     original_argv = ARGV.clone
 
     ARGV.clear.concat(['-l', './sample_files'])
-    expected = <<~TEXT.chomp
-      total 12
-      drwxr-xr-x 3 root root   96 Jan  2 04:34 dir1
-      drwxr-xr-t 3 root root   96 Jan  2 04:34 dir2
-      -rw-r--r-- 1 root root    6 Jan  2 05:03 file1
-      -rwsr--r-- 1 root root    0 Jul  1  2021 file2
-      -rw-r-Sr-- 1 root root 4097 Jan  2 05:02 file3
-      lrwxr-xr-x 1 root root    5 Jan  2 04:35 link -> file1
-    TEXT
     path, options = parse_arguments
     filenames = filenames(path, options: options)
     actual = long_format(path, filenames)
+    expected = `\ls -l #{path}`.chomp
 
     assert_equal(expected, actual)
 
