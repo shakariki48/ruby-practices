@@ -228,3 +228,199 @@ class LsTest < Minitest::Test
     ARGV.clear.concat(original_argv)
   end
 end
+
+class LsTest < Minitest::Test
+  def test_all_with_ar_option
+    # setup
+    original_argv = ARGV.clone
+
+    ARGV.clear.concat(['-ar', '../..'])
+    path, options = parse_arguments
+    filenames = filenames(path, options: options)
+    actual = short_format(filenames)
+    expected = <<~TEXT.chomp
+      README.md         05.ls             .rubocop.yml
+      09.wc_object      04.bowling        .gitignore
+      08.ls_object      03.rake           .git
+      07.bowling_object 02.calendar       ..
+      06.wc             01.fizzbuzz       .
+    TEXT
+    assert_equal(expected, actual)
+
+    # teardown
+    ARGV.clear.concat(original_argv)
+  end
+
+  def test_all_with_ra_option
+    # setup
+    original_argv = ARGV.clone
+
+    ARGV.clear.concat(['-ra', '../..'])
+    path, options = parse_arguments
+    filenames = filenames(path, options: options)
+    actual = short_format(filenames)
+    expected = <<~TEXT.chomp
+      README.md         05.ls             .rubocop.yml
+      09.wc_object      04.bowling        .gitignore
+      08.ls_object      03.rake           .git
+      07.bowling_object 02.calendar       ..
+      06.wc             01.fizzbuzz       .
+    TEXT
+    assert_equal(expected, actual)
+
+    # teardown
+    ARGV.clear.concat(original_argv)
+  end
+
+  def test_all_with_rl_option
+    # setup
+    original_argv = ARGV.clone
+
+    ARGV.clear.concat(['-rl', '../..'])
+    path, options = parse_arguments
+    filenames = filenames(path, options: options)
+    actual = long_format(path, filenames)
+    expected = `\ls -rl #{path}`.chomp
+    assert_equal(expected, actual)
+
+    # teardown
+    ARGV.clear.concat(original_argv)
+  end
+
+  def test_all_with_lr_option
+    # setup
+    original_argv = ARGV.clone
+
+    ARGV.clear.concat(['-lr', '../..'])
+    path, options = parse_arguments
+    filenames = filenames(path, options: options)
+    actual = long_format(path, filenames)
+    expected = `\ls -lr #{path}`.chomp
+    assert_equal(expected, actual)
+
+    # teardown
+    ARGV.clear.concat(original_argv)
+  end
+
+  def test_all_with_la_option
+    # setup
+    original_argv = ARGV.clone
+
+    ARGV.clear.concat(['-la', '../..'])
+    path, options = parse_arguments
+    filenames = filenames(path, options: options)
+    actual = long_format(path, filenames)
+    expected = `\ls -la #{path}`.chomp
+    assert_equal(expected, actual)
+
+    # teardown
+    ARGV.clear.concat(original_argv)
+  end
+
+  def test_all_with_al_option
+    # setup
+    original_argv = ARGV.clone
+
+    ARGV.clear.concat(['-al', '../..'])
+    path, options = parse_arguments
+    filenames = filenames(path, options: options)
+    actual = long_format(path, filenames)
+    expected = `\ls -al #{path}`.chomp
+    assert_equal(expected, actual)
+
+    # teardown
+    ARGV.clear.concat(original_argv)
+  end
+end
+
+class LsTest < Minitest::Test
+  def test_all_with_arl_option
+    # setup
+    original_argv = ARGV.clone
+
+    ARGV.clear.concat(['-arl', '../..'])
+    path, options = parse_arguments
+    filenames = filenames(path, options: options)
+    actual = long_format(path, filenames)
+    expected = `\ls -arl #{path}`.chomp
+    assert_equal(expected, actual)
+
+    # teardown
+    ARGV.clear.concat(original_argv)
+  end
+
+  def test_all_with_alr_option
+    # setup
+    original_argv = ARGV.clone
+
+    ARGV.clear.concat(['-alr', '../..'])
+    path, options = parse_arguments
+    filenames = filenames(path, options: options)
+    actual = long_format(path, filenames)
+    expected = `\ls -alr #{path}`.chomp
+    assert_equal(expected, actual)
+
+    # teardown
+    ARGV.clear.concat(original_argv)
+  end
+
+  def test_all_with_rla_option
+    # setup
+    original_argv = ARGV.clone
+
+    ARGV.clear.concat(['-rla', '../..'])
+    path, options = parse_arguments
+    filenames = filenames(path, options: options)
+    actual = long_format(path, filenames)
+    expected = `\ls -rla #{path}`.chomp
+    assert_equal(expected, actual)
+
+    # teardown
+    ARGV.clear.concat(original_argv)
+  end
+
+  def test_all_with_ral_option
+    # setup
+    original_argv = ARGV.clone
+
+    ARGV.clear.concat(['-ral', '../..'])
+    path, options = parse_arguments
+    filenames = filenames(path, options: options)
+    actual = long_format(path, filenames)
+    expected = `\ls -ral #{path}`.chomp
+    assert_equal(expected, actual)
+
+    # teardown
+    ARGV.clear.concat(original_argv)
+  end
+
+  def test_all_with_lar_option
+    # setup
+    original_argv = ARGV.clone
+
+    ARGV.clear.concat(['-lar', '../..'])
+    path, options = parse_arguments
+    filenames = filenames(path, options: options)
+    actual = long_format(path, filenames)
+    expected = `\ls -lar #{path}`.chomp
+    assert_equal(expected, actual)
+
+    # teardown
+    ARGV.clear.concat(original_argv)
+  end
+
+  def test_all_with_lra_option
+    # setup
+    original_argv = ARGV.clone
+
+    ARGV.clear.concat(['-lra', '../..'])
+    path, options = parse_arguments
+    filenames = filenames(path, options: options)
+    actual = long_format(path, filenames)
+    expected = `\ls -lra #{path}`.chomp
+    assert_equal(expected, actual)
+
+    # teardown
+    ARGV.clear.concat(original_argv)
+  end
+end
