@@ -50,8 +50,10 @@ end
 
 def files(path, filenames)
   if File.directory?(path)
-    file_paths = filenames.map { |filename| File.join(path, filename) }
-    file_paths.map { |file_path| File.new(file_path) }
+    filenames.map do |filename|
+      file_path = File.join(path, filename)
+      File.new(file_path)
+    end
   else
     [File.new(path)]
   end
@@ -91,7 +93,7 @@ def long_format(path, filenames)
     "#{timestamp_month(file)} " \
     "#{timestamp_day(file)} " \
     "#{timestamp_time_or_year(file).rjust(max_char_length(files, 'timestamp_time_or_year'))} " \
-    "#{filename(file)}"
+    "#{filename(path, file)}"
   end
   lines.join("\n")
 end
@@ -183,8 +185,8 @@ def timestamp_time_or_year(file)
   mtime.strftime(mtime < six_months_ago || mtime > Time.now ? '%Y' : '%H:%M')
 end
 
-def filename(file)
-  filename = File.basename(file.path)
+def filename(path, file)
+  filename = File.directory?(path) ? File.basename(file.path) : path
   filename += " -> #{File.readlink(file.path)}" if file.lstat.symlink?
   filename
 end
