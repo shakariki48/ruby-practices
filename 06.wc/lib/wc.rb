@@ -1,6 +1,8 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
+require 'optparse'
+
 # $ wc [-l] [file ...]
 # <lines> <words> <bytes> <file>
 # ...
@@ -26,7 +28,16 @@ def wc(paths, options)
 end
 
 def parse_arguments
-  ##
+  options = []
+  opt = OptionParser.new
+  opt.banner = <<~TEXT
+    wc -- word, line, character, and byte count
+    usage: wc [-l] [file ...]
+  TEXT
+  opt.on('-l', 'The number of lines in each input file is written to the standard output.') { options << 'l' }
+  argv = opt.parse(ARGV)
+  paths = argv || []
+  [paths, options]
 end
 
 def file_content(path)
