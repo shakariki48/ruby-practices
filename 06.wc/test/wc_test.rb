@@ -14,9 +14,9 @@ class WcTest < Minitest::Test
     expected = <<-TEXT.chomp
       23     100    1103 ./test/sample_files/file1
     TEXT
-    paths, options = p parse_arguments
+    paths, options = parse_arguments
     actual = wc(paths, options)
-    # assert_equal(expected, actual)
+    assert_equal(expected, actual)
 
     ARGV.clear.concat(original_argv)
   end
@@ -29,9 +29,9 @@ class WcTest < Minitest::Test
     expected = <<-TEXT.chomp
       23 test/sample_files/file1
     TEXT
-    paths, options = p parse_arguments
+    paths, options = parse_arguments
     actual = wc(paths, options)
-    # assert_equal(expected, actual)
+    assert_equal(expected, actual)
 
     ARGV.clear.concat(original_argv)
   end
@@ -49,9 +49,9 @@ class WcTest < Minitest::Test
        3      71     488 test/sample_files/file2
       26     171    1591 total
     TEXT
-    paths, options = p parse_arguments
+    paths, options = parse_arguments
     actual = wc(paths, options)
-    # assert_equal(expected, actual)
+    assert_equal(expected, actual)
 
     ARGV.clear.concat(original_argv)
   end
@@ -70,9 +70,9 @@ class WcTest < Minitest::Test
        3 ./test/sample_files/file2
       26 total
     TEXT
-    paths, options = p parse_arguments
+    paths, options = parse_arguments
     actual = wc(paths, options)
-    # assert_equal(expected, actual)
+    assert_equal(expected, actual)
 
     ARGV.clear.concat(original_argv)
   end

@@ -41,7 +41,11 @@ def parse_arguments
 end
 
 def file_content(path)
-  ##
+  file_content = ''
+  File.open(path) do |file|
+    file_content = file.read
+  end
+  file_content
 end
 
 def count(path, file_content)
