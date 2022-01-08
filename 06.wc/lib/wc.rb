@@ -49,13 +49,12 @@ def file_content(path)
 end
 
 def count(path, file_content)
-  ##
-  # {
-  #   path: ''
-  #   lines: 0,
-  #   words: 0,
-  #   bytes: 0
-  # }
+  {
+    path: path,
+    lines: file_content.lines.size,
+    words: file_content.split(nil).size,
+    bytes: file_content.bytesize
+  }
 end
 
 def format_counts(counts, options = [])

@@ -12,7 +12,7 @@ class WcTest < Minitest::Test
     ARGV.clear.concat(args)
 
     expected = <<-TEXT.chomp
-      23     100    1103 ./test/sample_files/file1
+      23     100    1183 ./test/sample_files/file1
     TEXT
     paths, options = parse_arguments
     actual = wc(paths, options)
@@ -45,9 +45,9 @@ class WcTest < Minitest::Test
     ARGV.clear.concat(args)
 
     expected = <<-TEXT.chomp
-      23     100    1103 test/sample_files/file1
+      23     100    1183 test/sample_files/file1
        3      71     488 test/sample_files/file2
-      26     171    1591 total
+      26     171    1671 total
     TEXT
     paths, options = parse_arguments
     actual = wc(paths, options)
@@ -60,8 +60,8 @@ class WcTest < Minitest::Test
     original_argv = ARGV.clone
     args = [
       '-l',
-      './sample_files/file1',
-      './sample_files/file2'
+      './test/sample_files/file1',
+      './test/sample_files/file2'
     ]
     ARGV.clear.concat(args)
 
