@@ -61,20 +61,16 @@ def count_total(counts)
 end
 
 def format_counts(counts, options = %w[l w c])
+  width = {
+    lines: [max_char_length(counts, :lines), 7].max,
+    words: [max_char_length(counts, :words), 7].max,
+    bytes: [max_char_length(counts, :bytes), 7].max
+  }
   lines = counts.map do |count|
     line = ''
-    if options.include?('l')
-      width = [max_char_length(counts, :lines), 7].max
-      line += " #{count[:lines].to_s.rjust(width)}"
-    end
-    if options.include?('w')
-      width = [max_char_length(counts, :words), 7].max
-      line += " #{count[:words].to_s.rjust(width)}"
-    end
-    if options.include?('c')
-      width = [max_char_length(counts, :bytes), 7].max
-      line += " #{count[:bytes].to_s.rjust(width)}"
-    end
+    line += " #{count[:lines].to_s.rjust(width[:lines])}" if options.include?('l')
+    line += " #{count[:words].to_s.rjust(width[:words])}" if options.include?('w')
+    line += " #{count[:bytes].to_s.rjust(width[:bytes])}" if options.include?('c')
     line += " #{count[:path]}"
     line.rstrip
   end
