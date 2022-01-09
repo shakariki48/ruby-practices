@@ -32,18 +32,15 @@ rescue OptionParser::InvalidOption => e
 end
 
 def wc(paths, options = %w[l w c])
-  counts = []
   paths << '' if paths.empty? # 標準入力から
-  paths.each do |path|
-    counts << count(path)
-  end
+  counts = paths.map { |path| count(path) }
   counts << count_total(counts) if counts.size > 1
   format_counts(counts, options)
 end
 
 def count(path)
-  io = path.empty? ? $stdin : File.open(path)
   count = { path: path, lines: 0, words: 0, bytes: 0 }
+  io = path.empty? ? $stdin : File.open(path)
   io.each_line do |line|
     count[:lines] += 1
     count[:words] += line.split(nil).size
