@@ -10,14 +10,9 @@ end
 
 def wc(paths, options = %w[l w c])
   counts = []
-  if paths.empty?
-    file_content = $stdin.readlines.join
-    counts << count('', file_content)
-  else
-    paths.each do |path|
-      file_content = file_content(path)
-      counts << count(path, file_content)
-    end
+  paths << '' if paths.empty? # 標準入力から
+  paths.each do |path|
+    counts << count(path)
   end
   counts << count_total(counts) if counts.size > 1
   format_counts(counts, options)
@@ -38,21 +33,17 @@ def parse_arguments
   [paths, options]
 end
 
-def file_content(path)
-  file_content = ''
-  File.open(path) do |file|
-    file_content = file.read
+def count(path)
+  io = path.empty? ? $stdin : File.open(path)
+  count = { path: path, lines: 0, words: 0, bytes: 0 }
+  io.each_line do |line|
+    count[:lines] += 1
+    count[:words] += line.split(nil).size
+    count[:bytes] += line.bytesize
   end
-  file_content
-end
-
-def count(path, file_content)
-  {
-    path: path,
-    lines: file_content.lines.size,
-    words: file_content.split(nil).size,
-    bytes: file_content.bytesize
-  }
+  count
+ensure
+  io.close
 end
 
 def count_total(counts)
