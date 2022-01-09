@@ -4,8 +4,31 @@
 require 'optparse'
 
 def main
-  paths, options = parse_arguments
-  puts wc(paths, options)
+  paths, options, err_msg = parse_arguments
+  puts err_msg.nil? ? wc(paths, options) : err_msg
+end
+
+def parse_arguments
+  options = []
+  opt = OptionParser.new
+  usage_text = 'usage: wc [-lwc] [file ...]'
+  opt.banner = <<~TEXT
+    wc -- word, line, character, and byte count
+    #{usage_text}
+  TEXT
+  opt.on('-l', 'The number of lines in each input file is written to the standard output.') { options << 'l' }
+  opt.on('-w', 'The number of words in each input file is written to the standard output.') { options << 'w' }
+  opt.on('-c', 'The number of bytes in each input file is written to the standard output.') { options << 'c' }
+  paths = opt.parse(ARGV)
+  options = %w[l w c] if options.empty?
+  [paths, options, nil]
+rescue OptionParser::InvalidOption => e
+  specified_option = e.args[0].delete('-')
+  err_msg = <<~TEXT
+    wc: illegal option -- #{specified_option}
+    #{usage_text}
+  TEXT
+  [nil, nil, err_msg]
 end
 
 def wc(paths, options = %w[l w c])
@@ -16,21 +39,6 @@ def wc(paths, options = %w[l w c])
   end
   counts << count_total(counts) if counts.size > 1
   format_counts(counts, options)
-end
-
-def parse_arguments
-  options = []
-  opt = OptionParser.new
-  opt.banner = <<~TEXT
-    wc -- word, line, character, and byte count
-    usage: wc [-l] [file ...]
-  TEXT
-  opt.on('-l', 'The number of lines in each input file is written to the standard output.') { options << 'l' }
-  opt.on('-w', 'The number of words in each input file is written to the standard output.') { options << 'w' }
-  opt.on('-c', 'The number of bytes in each input file is written to the standard output.') { options << 'c' }
-  paths = opt.parse(ARGV)
-  options = %w[l w c] if options.empty?
-  [paths, options]
 end
 
 def count(path)
