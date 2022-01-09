@@ -11,7 +11,7 @@ end
 def wc(paths, options = %w[l w c])
   counts = []
   if paths.empty?
-    file_content = gets
+    file_content = $stdin.readlines.join
     counts << count('', file_content)
   else
     paths.each do |path|

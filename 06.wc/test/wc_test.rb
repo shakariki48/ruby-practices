@@ -76,4 +76,10 @@ class WcTest < Minitest::Test
 
     ARGV.clear.concat(original_argv)
   end
+
+  def test_wc_stdin
+    expected = `cat ./test/sample_files/file1 | wc`
+    actual = `cat ./test/sample_files/file1 | ./lib/wc.rb`
+    assert_equal(expected, actual)
+  end
 end
