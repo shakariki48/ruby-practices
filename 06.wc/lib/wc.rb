@@ -37,10 +37,9 @@ def wc(paths, options = %w[l w c])
     counts << count($stdin)
   else
     paths.each do |path|
-      file = File.open(path)
-      counts << count(file, path)
-    ensure
-      file.close
+      File.open(path) do |file|
+        counts << count(file, path)
+      end
     end
   end
   counts << count_total(counts) if counts.size > 1
