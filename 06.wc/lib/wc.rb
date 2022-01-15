@@ -32,31 +32,37 @@ rescue OptionParser::InvalidOption => e
 end
 
 def wc(paths, options = %w[l w c])
-  paths << '' if paths.empty? # 標準入力から
-  counts = paths.map { |path| count(path) }
+  counts = []
+  if paths.empty?
+    counts << count($stdin)
+  else
+    paths.each do |path|
+      file = File.open(path)
+      counts << count(file, path)
+    ensure
+      file.close
+    end
+  end
   counts << count_total(counts) if counts.size > 1
   format_counts(counts, options)
 end
 
-def count(path)
-  count = { path: path, lines: 0, words: 0, bytes: 0 }
-  io = path.empty? ? $stdin : File.open(path)
+def count(io, path = '')
+  count = { lines: 0, words: 0, bytes: 0, path: path }
   io.each_line do |line|
     count[:lines] += 1
     count[:words] += line.split(nil).size
     count[:bytes] += line.bytesize
   end
   count
-ensure
-  io.close
 end
 
 def count_total(counts)
   {
-    path: 'total',
     lines: counts.sum { |count| count[:lines] },
     words: counts.sum { |count| count[:words] },
-    bytes: counts.sum { |count| count[:bytes] }
+    bytes: counts.sum { |count| count[:bytes] },
+    path: 'total'
   }
 end
 
